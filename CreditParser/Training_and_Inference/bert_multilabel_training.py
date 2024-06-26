@@ -1,24 +1,26 @@
 # Databricks notebook source
-import torch
-import pandas as pd
-import numpy as np
-from sklearn.preprocessing import MultiLabelBinarizer
-from sklearn.metrics import multilabel_confusion_matrix, classification_report, f1_score, accuracy_score
-from ast import literal_eval
-import matplotlib.pyplot as plt
-import seaborn as sns
-import joblib
-import json
-import optuna
-import transformers
-from torch.utils.data import Dataset, DataLoader
-from transformers import BertTokenizer, BertModel, AutoModel
-from torchmetrics.classification import MultilabelHammingDistance
-import time
 import datetime
-import pickle
-from iterstrat.ml_stratifiers import MultilabelStratifiedShuffleSplit
+import json
 import os
+import pickle
+import time
+from ast import literal_eval
+
+import joblib
+import matplotlib.pyplot as plt
+import numpy as np
+import optuna
+import pandas as pd
+import seaborn as sns
+import torch
+import transformers
+from iterstrat.ml_stratifiers import MultilabelStratifiedShuffleSplit
+from sklearn.metrics import (accuracy_score, classification_report, f1_score,
+                             multilabel_confusion_matrix)
+from sklearn.preprocessing import MultiLabelBinarizer
+from torch.utils.data import DataLoader, Dataset
+from torchmetrics.classification import MultilabelHammingDistance
+from transformers import AutoModel, BertModel, BertTokenizer
 
 # COMMAND ----------
 
@@ -196,7 +198,7 @@ class BERTClass(torch.nn.Module):
     Parameters
     ----------
     dropout: float value to minimize overfitting
-    classes_len: number of target labels (17 for abstracts, 18 for methods)
+    classes_len: number of target labels
     """
     def __init__(self, dropout, classes_len):
         super(BERTClass, self).__init__()
@@ -216,7 +218,7 @@ def prepare_loaders(train_dataset, valid_dataset, max_len, batch_size, num_worke
     
     Parameters
     ----------
-    Calls ConsortDataSet class to tokenize and encode text. See docstring for more info
+    Calls CreditDataset class to tokenize and encode text. See docstring for more info
         train_dataset
         valid_dataset
         tokenizer
@@ -269,7 +271,7 @@ def train(model, training_loader, optimizer, epoch, pos_weight, device):
     training_loader: iterable dataset used to train
     optimizer: optimizer to be used to update parameters
     epoch: maximum number of epochs to be trained on
-    pos_weight: class weighting to be used in loss function
+    pos_weight: class weighting can be used in loss function
     """
     
     model.train() #set model to training mode
@@ -309,7 +311,7 @@ def test(model, validation_loader, valid_loss_input, pos_weight, device):
     model: trained model to validate
     validation_loader: iterable dataset used to validate
     valid_loss_input: initial input loss value
-    pos_weight: class weighting to be used in loss function
+    pos_weight: class weighting can be used in loss function
     
     Returns
     -------
@@ -372,8 +374,7 @@ def predict_and_score(val_targets, val_outputs, pred_threshold, classes_len):
     
 def pos_weights(df, classes_len):
     """
-    Calculate weights for each class. Returns np.tobytes() because torch tensor isn't
-    compatibilite with Optuna.trial.Trial.suggest_categorical()
+    Calculate weights for each class
     
     Parameters
     ----------
@@ -395,7 +396,7 @@ def pos_weights(df, classes_len):
 
 def run(trial, train_dataset, valid_dataset):
     """
-    Train BERT model for fine tuning on CONSORT data
+    Train BERT model for fine tuning on data
     
     -Uses Optuna to define and train hyperparameters found in CONFIG
     -Loads training and validation loaders
@@ -451,7 +452,6 @@ def run(trial, train_dataset, valid_dataset):
 
     for epoch in range(1, CONFIG['n_epochs']+1):
 
-        # train(model, training_loader, optimizer, scheduler, epoch, pos_weight, device)
         train(model, training_loader, optimizer, epoch, pos_weight, device)
         val_targets, val_outputs, valid_loss_min = test(model, validation_loader, valid_loss_input, pos_weight, device)
         valid_loss_input = valid_loss_min
@@ -486,12 +486,12 @@ best_params = optuna_scibert.best_params
 
 def run_best(train_dataset, valid_dataset, best_params):
     """
-    Train BERT model for fine tuning on CONSORT data
+    Train BERT model for fine tuning on data
     
     -Uses Optuna to define and train hyperparameters found in CONFIG
     -Loads training and validation loaders
     -Trains model
-    -Returns macro F1 score that Optuna uses to maximize and tune parameters
+    -Returns hamming score that Optuna uses to minimize and tune parameters
     
     Parameters
     ----------
