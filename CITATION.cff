@@ -5,4 +5,5 @@ authors:
   - given-names: "Elsevier maintainers and contributors"
 url: "https://github.com/elsevierlabs-os/credit-contribution-parser"
 license: "MIT"
+date-release: "06-27-2024"
 journal: "Github repository"
