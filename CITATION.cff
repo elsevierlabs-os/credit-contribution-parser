@@ -2,8 +2,9 @@ cff-version: 1.0.0
 title: "Credit Contribution Parser"
 message: "If you use this software, please cite it as below"
 authors:
-  - given-names: "Elsevier maintainers and contributors"
+  - given-names: "Elsevier"
 url: "https://github.com/elsevierlabs-os/credit-contribution-parser"
 license: "MIT"
-date-release: "06-27-2024"
+month: "06"
+year: "2024"
 journal: "Github repository"
