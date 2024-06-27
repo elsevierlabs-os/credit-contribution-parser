@@ -13,10 +13,11 @@ The notebooks should be used in a certain order:
 6. Training_and_Inference/credit_inference_cleanup to clean up data
 
 ## Citing this Repository
-
+```bibtext
 @software{Elsevier_Credit_Contribution_Parser,
-author = {Elsevier},
-license = {MIT},
-title = {{Credit Contribution Parser}},
-url = {https://github.com/elsevierlabs-os/credit-contribution-parser}
+    author = {Elsevier},
+    license = {MIT},
+    title = {{Credit Contribution Parser}},
+    url = {https://github.com/elsevierlabs-os/credit-contribution-parser}
 }
+```
