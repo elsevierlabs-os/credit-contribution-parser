@@ -11,3 +11,12 @@ The notebooks should be used in a certain order:
 4. Training_and_Inference/bert_multilabel_training to train a bert model on multilabel classification task
 5. Training_and_Inference/credit_inference to perform inference over output from CreditParser
 6. Training_and_Inference/credit_inference_cleanup to clean up data
+
+## Citing this Repository
+
+@software{Elsevier_Credit_Contribution_Parser,
+author = {Elsevier},
+license = {MIT},
+title = {{Credit Contribution Parser}},
+url = {https://github.com/elsevierlabs-os/credit-contribution-parser}
+}
