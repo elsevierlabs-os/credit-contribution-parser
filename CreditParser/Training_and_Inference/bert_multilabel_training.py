@@ -297,7 +297,7 @@ def train(model, training_loader, optimizer, epoch, pos_weight, device):
 def test(model, validation_loader, valid_loss_input, pos_weight, device):
     """
     For each batch of testing data:
-        1.Tell pytorch not to both constructing the compute graph during forward pass since only needed for backprop 
+        1. Tell pytorch not to construct the compute graph during forward pass since only needed for backprop 
         2. Unpack batch from validation loader
         3. Isolate batch ids, mask, token_type_ids and target values
         4. Calculate predictions
@@ -351,7 +351,7 @@ def test(model, validation_loader, valid_loss_input, pos_weight, device):
 
 def predict_and_score(val_targets, val_outputs, pred_threshold, classes_len):
     """
-    Calculate multi-label hamming distance metric to score predicted vs true
+    Calculate multi-label Hamming distance metric to score predicted vs true
     
     Parameters
     ----------

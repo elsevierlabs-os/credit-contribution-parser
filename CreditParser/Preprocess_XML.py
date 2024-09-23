@@ -17,20 +17,26 @@ cs_unstructured_corpus = table("database.table")
 
 # COMMAND ----------
 
+
+
 def get_credit_statement(xml):
     """
     Find credit statement using regex, collect parent section 2 levels up from body
     Some credit statements are broken up in to multiple paragraphs
+    This presumes a full-text schema based on Elsevier's Journal Article DTD
+    See https://www.elsevier.com/researcher/author/policies-and-guidelines/elsevier-xml-dtds-and-transport-schemas for details
+    And that the article authors have labeled the section with a heading matching the regex
     """
     soup = BeautifulSoup(xml, 'xml')
+    section_header_regex = 'CRediT|[Aa]uthor(ship)? ([Cc]ontribut|[Ss]tatement)|([Cc]ontribution|[Cc]redit) [Ss]tatement'
 
     try:
-        credit_statement_sec = soup.body.find(string= re.compile('CRediT|[Aa]uthor(ship)? ([Cc]ontribut|[Ss]tatement)|([Cc]ontribution|[Cc]redit) [Ss]tatement')).parent.parent
+        credit_statement_sec = soup.body.find(string= re.compile(section_header_regex)).parent.parent
         paras = credit_statement_sec.find_all('para', {"view":"all"})
         if not paras:
             raise Exception('need to go up a level')
     except:
-        credit_statement_sec = soup.body.find(string= re.compile('CRediT|[Aa]uthor(ship)? ([Cc]ontribut|[Ss]tatement)|([Cc]ontribution|[Cc]redit) [Ss]tatement')).parent.parent.parent
+        credit_statement_sec = soup.body.find(string= re.compile(section_header_regex)).parent.parent.parent
         paras = credit_statement_sec.find_all('para', {"view":"all"})
     credit_statement = [item.text.replace(u'\xa0', u' ') for item in paras] #weird encoding error
     credit_statement = [cs.replace(':', '') for cs in credit_statement]

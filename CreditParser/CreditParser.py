@@ -43,7 +43,7 @@ model = SentenceTransformer('sentence-transformers/all-MiniLM-L12-v2')
 
 class CreditParser:
     """
-    This pipeline serves to structure CRediT author statements (https://beta.elsevier.com/researcher/author/policies-and-guidelines/credit-author-statement?trial=true)
+    This pipeline serves to structure CRediT author statements (https://www.elsevier.com/researcher/author/policies-and-guidelines/credit-author-statement)
     into author auid:list(contributor roles) for a given PII. 
 
     For example,
@@ -63,9 +63,14 @@ class CreditParser:
     """
     def __init__(self, au, cs, ag):
         """
-        Read in xml using bs4
+        Read in xml using bs4.
+        Note that the XML must be structured according to the Elsevier Journal Article DTD,
+        available here: https://www.elsevier.com/researcher/author/policies-and-guidelines/elsevier-xml-dtds-and-transport-schemas#Schema-5.15
+
         """
-        self.author_info = [auth for auth in au if auth if auth.values() is not None] #collect author information from dataframe, remove empty dicts
+        # todo - what are the expected inputs here?
+
+        self.author_info = [author for author in au if author if author.values() is not None] #collect author information from dataframe, remove empty dicts
 
         self.author_group = BeautifulSoup(ag, 'xml') #find author section in xml
 
@@ -126,28 +131,9 @@ class CreditParser:
         else:
             return False
 
-    #REMOVED SINCE CREDIT STATEMENT ALREADY EXTRACTED IN PRIOR PROCESSING STEP
-    # def get_credit_statement(self):
-    #     """
-    #     Find credit statement using regex, collect parent section 2 levels up from body
-    #     Some credit statements are broken up in to multiple paragraphs
-    #     """
-
-    #     try:
-    #         credit_statement_sec = self.soup.body.find(string= re.compile('CRediT|[Aa]uthor(ship)? ([Cc]ontribut|[Ss]tatement)|([Cc]ontribution|[Cc]redit) [Ss]tatement')).parent.parent
-    #         paras = credit_statement_sec.find_all('para', {"view":"all"})
-    #         if not paras:
-    #             raise Exception('need to go up a level')
-    #     except:
-    #         credit_statement_sec = self.soup.body.find(string= re.compile('CRediT|[Aa]uthor(ship)? ([Cc]ontribut|[Ss]tatement)|([Cc]ontribution|[Cc]redit) [Ss]tatement')).parent.parent.parent
-    #         paras = credit_statement_sec.find_all('para', {"view":"all"})
-    #     credit_statement = [item.text.replace(u'\xa0', u' ') for item in paras] #weird encoding error
-    #     credit_statement = [cs.replace(':', '') for cs in credit_statement]
-    #     return credit_statement
-
     def get_full_name_from_xml(self):
         """
-        For some reason, "Au" data from scopus dataset does not always contain a first and last name.
+        For some reason, "Au" data from Scopus dataset does not always contain a first and last name.
         This method is a fallback method to extract full name from xml
 
         Collect all author sections from xml
@@ -170,7 +156,6 @@ class CreditParser:
         First join entire name and then split to get appropriate parts: ' '.join(['John A.', 'Smith']) --> 'John A. Smith' --> ['John', 'A.', 'Smith']
         Then extract initials
         """
-
 
         try:
             name = ' '.join([au['given_name'], au['surname']])
