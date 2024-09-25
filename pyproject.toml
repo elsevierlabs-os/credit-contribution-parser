@@ -1,0 +1,24 @@
+[project]
+name = "CreditParser"
+version = "0.1.0"
+description = "Credit Statement Parser"
+authors = []
+dependencies = [
+    "fuzzysearch>=0.7.3",
+    "beautifulsoup4>=4.12.3",
+    "regex>=2024.9.11",
+    "sentence-transformers>=3.1.1",
+    "spacy==3.5.2",
+    "iterative-stratification>=0.1.7",
+    "openai>=1.47.0",
+    "seaborn>=0.13.2",
+    "matplotlib>=3.7.5",
+    "optuna>=4.0.0",
+]
+requires-python = "==3.8.*"
+readme = "README.md"
+license = {text = "MIT"}
+
+
+[tool.pdm]
+distribution = false
